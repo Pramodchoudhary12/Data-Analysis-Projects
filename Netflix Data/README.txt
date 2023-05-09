@@ -1,6 +1,6 @@
 --> Cleaning and transformation using Python Pandas
 Got an overview of data.
-Changed data types 
+Changed data types .
 Removed errors
 Removed null values in some columns
 
