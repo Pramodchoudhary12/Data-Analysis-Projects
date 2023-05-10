@@ -1,0 +1,4 @@
+This is Employee data for HR analysis.
+Cleaned the data(checking for errors, duplicates, nulls etc.) using python libraries.
+Performed basic analysis.
+Merged queries to attatch employee name dataset.
