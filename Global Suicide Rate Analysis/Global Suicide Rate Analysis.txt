@@ -1,0 +1,131 @@
+Global Suicide Rate Analysis
+
+--> Cleaning and Transformation
+
+1) Checking for duplicates , format checking, error checking
+
+
+--> SQL Analysis
+
+1) Find MALE, FEMALE and TOTAL Suicides on 5 year intervels 
+WITH male_suicides_on_5year_interval as
+(SELECT SUM(suicide_no) as total_male_suicide, year 
+FROM suicide_rates
+WHEREyear IN(1990,1995,2000,2005,2010,2015) and sex = 'male'
+GROUP BY year
+ORDER BY year),
+
+female_suicides_on_5year_interval as
+(SELECT SUM(suicide_no) as total_female_suicide, year 
+FROM suicide_rates
+WHERE year IN(1990,1995,2000,2005,2010,2015) and sex = 'female'
+GROUP BY year
+ORDER BY year)
+
+SELECT total_male_suicide, total_female_suicide, year
+FROM male_suicides_on_5year_interval JOIN female_suicides_on_5year_interval ON
+male_suicides_on_5year_interval.year=female_suicides_on_5year_interval.year
+
+
+2) Find Average male and female suicides on 5 year intervals 
+
+WITH avgmale_suicides_on_5year_interval as
+(SELECT avg(suicide_no) as avg_male_suicide, year 
+FROM suicide_rates
+WHERE year IN(1990,1995,2000,2005,2010,2015) and sex = 'male'
+GROUP BY year
+ORDER BY year),
+avgfemale_suicides_on_5year_interval as
+(SELECT avg(suicide_no) as avg_female_suicide, year 
+FROM suicide_rates
+where year IN(1990,1995,2000,2005,2010,2015) and sex = 'female'
+group BY year
+ORDER BY year)
+
+SELECT avg_male_suicide, avg_female_suicide, avgmale_suicides_on_5year_interval.year
+FROM avgmale_suicides_on_5year_interval JOIN avgfemale_suicides_on_5year_interval ON 
+avgmale_suicides_on_5year_interval.year=avgfemale_suicides_on_5year_interval.year
+
+3) Find male , female and total suicides categorised by country 
+
+with s1 as 
+(select SUM(suicide_no) as male_suicide_no, age
+from suicide_rates
+where sex = 'male'
+GROUP BY age
+ORDER BY  age
+),
+s2 as
+(select  SUM(suicide_no) as female_suicide_no, age
+from suicide_rates
+where sex = 'female'
+GROUP BY age
+ORDER BY  age
+)
+
+select *
+from s1 join  s2 on s1.age=s2.age
+
+4)find male , female and totalsuicides by country
+
+WITH C AS
+(SELECT country , SUM(suicide_no) as total_suicides
+FROM suicide_rates
+GROUP BY country
+ORDER BY total_suicides DESC),
+
+C2 AS 
+(SELECT country , SUM(suicide_no) as total_male_suicides
+FROM suicide_rates
+WHERE sex = 'male'
+GROUP BY country
+ORDER BY total_male_suicides DESC),
+
+C3 AS
+(SELECT country , SUM(suicide_no) as total_female_suicides
+FROM suicide_rates
+WHERE sex = 'female'
+GROUP BY country
+ORDER BY total_female_suicides DESC)
+
+SELECT C.country, C.total_suicides, C2.total_male_suicides,C3.total_female_suicides
+FROM C JOIN C2 ON C.country = C2.country JOIN C3 ON C2.country= C3.country
+GROUP BY C.country, C.total_suicides, C2.total_male_suicides,C3.total_female_suicides
+ORDER BY C.total_suicides DESC
+
+5)find male , female and totalsuicides by year
+
+WITH C AS
+(SELECT year , SUM(suicide_no) as total_suicides
+FROM suicide_rates
+GROUP BY year
+ORDER BY total_suicides DESC),
+
+C2 AS 
+(SELECT year , SUM(suicide_no) as total_male_suicides
+FROM suicide_rates
+WHERE sex = 'male'
+GROUP BY year
+ORDER BY total_male_suicides DESC),
+
+C3 AS
+(SELECT year , SUM(suicide_no) as total_female_suicides
+FROM suicide_rates
+WHERE sex = 'female'
+GROUP BY year
+ORDER BY total_female_suicides DESC)
+
+SELECT C.year, C.total_suicides, C2.total_male_suicides,C3.total_female_suicides
+FROM C JOIN C2 ON C.year = C2.year JOIN C3 ON C2.year= C3.year
+GROUP BY C.year, C.total_suicides, C2.total_male_suicides,C3.total_female_suicides
+ORDER BY C.total_suicides DESC
+
+
+--> Power Bi
+
+Made a dashboard using analysis from SQL 
+while comparing MALE and FEMALE suicides rates by year , country , intervals
+and added a world map showing total suicides in different countries
+
+
+
